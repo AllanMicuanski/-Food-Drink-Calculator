@@ -17,4 +17,3 @@
 
 - **React**: Biblioteca JavaScript para construção de interfaces de usuário.
 - **Styled Components**: Para estilização de componentes.
-- **TypeScript**: Para tipagem estática e maior robustez no código.
