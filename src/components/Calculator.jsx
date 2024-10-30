@@ -21,8 +21,8 @@ const Calculator = () => {
   const calcularComida = () => {
     const totalFatias = pessoas * fatiasPorPessoa;
     const totalPizzas = Math.ceil(totalFatias / FATIAS_PIZZA[tamanhoPizza]);
-    const totalCustoPizza = totalPizzas * precoPizza; // cálculo do custo total
-    const rachaRango = pessoas > 0 ? (totalCustoPizza / pessoas) : 0; // cálculo do racha do rango
+    const totalCustoPizza = totalPizzas * precoPizza; 
+    const rachaRango = pessoas > 0 ? (totalCustoPizza / pessoas) : 0; 
 
     return {
       mensagem: `Você vai precisar de: ${totalPizzas} pizzas (total: ${totalFatias} fatias) - Custo total: R$ ${totalCustoPizza.toFixed(2)}`,
@@ -35,10 +35,8 @@ const Calculator = () => {
     return `${totalBebida.toFixed(2)} litros de refrigerante`;
   };
 
-  // Obter resultados
   const { mensagem, racha } = calcularComida();
 
-  // Função para resetar os campos
   const resetarCampos = () => {
     setPessoas(0);
     setTamanhoPizza('media');
@@ -87,11 +85,13 @@ const Calculator = () => {
         step="0.01"
       />
 
-      {/* Botão de Reset */}
       <button onClick={resetarCampos} className="reset-button">Resetar</button>
 
-      {/* Resultados */}
       <Result mensagem={mensagem} racha={racha} calcularBebida={calcularBebida} />
+
+      <footer className="footer">
+        <p>Powered by: Allan Micuanski</p>
+      </footer>
     </div>
   );
 };
