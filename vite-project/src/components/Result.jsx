@@ -1,15 +1,13 @@
 // src/components/Result.jsx
 import React from 'react';
 
-const Result = ({ calcularComida, calcularBebida }) => {
-  const comida = calcularComida();
-  const bebida = calcularBebida();
-
+const Result = ({ mensagem, racha, calcularBebida }) => {
   return (
-    <div>
-      <h2>Resultados</h2>
-      <p>{comida}</p>
-      <p>{bebida}</p>
+    <div className="result">
+      <h2>Resultados:</h2>
+      <p>{mensagem}</p>
+      <p>Dividido por pessoa: {racha}</p>
+      <p>{calcularBebida()}</p>
     </div>
   );
 };

@@ -1,16 +1,15 @@
 // src/components/Calculator.jsx
 import React, { useState } from 'react';
-import Button from './Button';
 import Result from './Result';
-import { PRECO_PIZZA, FATIAS_PIZZA } from '../data/constants';
+import { FATIAS_PIZZA } from '../data/constants';
 import '../styles/components/Calculator.css';
 
 const Calculator = () => {
   const [pessoas, setPessoas] = useState(0);
   const [tamanhoPizza, setTamanhoPizza] = useState('media');
-  const [fatiasPorPessoa, setFatiasPorPessoa] = useState(4); // novo campo
-  const [bebidaPorPessoa, setBebidaPorPessoa] = useState(0.5); // novo campo em litros
-  const [precoPizza, setPrecoPizza] = useState(0); // novo campo
+  const [fatiasPorPessoa, setFatiasPorPessoa] = useState(4); 
+  const [bebidaPorPessoa, setBebidaPorPessoa] = useState(0.5); 
+  const [precoPizza, setPrecoPizza] = useState(0); 
 
   const handleInputChange = (e) => {
     const value = Number(e.target.value);
@@ -23,12 +22,29 @@ const Calculator = () => {
     const totalFatias = pessoas * fatiasPorPessoa;
     const totalPizzas = Math.ceil(totalFatias / FATIAS_PIZZA[tamanhoPizza]);
     const totalCustoPizza = totalPizzas * precoPizza; // cálculo do custo total
-    return `Você vai precisar de: ${totalPizzas} pizzas (total: ${totalFatias} fatias) - Custo total: R$ ${totalCustoPizza.toFixed(2)}`;
+    const rachaRango = pessoas > 0 ? (totalCustoPizza / pessoas) : 0; // cálculo do racha do rango
+
+    return {
+      mensagem: `Você vai precisar de: ${totalPizzas} pizzas (total: ${totalFatias} fatias) - Custo total: R$ ${totalCustoPizza.toFixed(2)}`,
+      racha: pessoas > 0 ? `R$ ${rachaRango.toFixed(2)} por pessoa` : 'R$ 0.00 por pessoa',
+    };
   };
 
   const calcularBebida = () => {
-    const totalBebida = pessoas * bebidaPorPessoa; // em litros
+    const totalBebida = pessoas * bebidaPorPessoa; 
     return `${totalBebida.toFixed(2)} litros de refrigerante`;
+  };
+
+  // Obter resultados
+  const { mensagem, racha } = calcularComida();
+
+  // Função para resetar os campos
+  const resetarCampos = () => {
+    setPessoas(0);
+    setTamanhoPizza('media');
+    setFatiasPorPessoa(4);
+    setBebidaPorPessoa(0.5);
+    setPrecoPizza(0);
   };
 
   return (
@@ -53,7 +69,7 @@ const Calculator = () => {
         min="1"
       />
 
-      <label>Quantidade de Bebida por Pessoa (em litros):</label>
+      <label>Bebida por Pessoa (litros):</label>
       <input
         type="number"
         value={bebidaPorPessoa}
@@ -71,8 +87,11 @@ const Calculator = () => {
         step="0.01"
       />
 
-      <Button calcularComida={calcularComida} calcularBebida={calcularBebida} />
-      <Result calcularComida={calcularComida} calcularBebida={calcularBebida} />
+      {/* Botão de Reset */}
+      <button onClick={resetarCampos} className="reset-button">Resetar</button>
+
+      {/* Resultados */}
+      <Result mensagem={mensagem} racha={racha} calcularBebida={calcularBebida} />
     </div>
   );
 };
