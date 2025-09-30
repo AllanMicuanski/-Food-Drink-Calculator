@@ -1,5 +1,8 @@
 // src/components/InputSection.jsx
 import React from 'react';
+import InputField from './InputField';
+import SelectField from './SelectField';
+import useValidation from '../hooks/useValidation';
 
 const InputSection = ({
   pessoas,
@@ -14,71 +17,116 @@ const InputSection = ({
   handlePrecoPizzaChange,
   resetarCampos
 }) => {
+  const {
+    getFieldStatus,
+    getFieldMessage,
+    isFormValid,
+    hasErrors
+  } = useValidation({
+    pessoas,
+    fatiasPorPessoa,
+    bebidaPorPessoa,
+    precoPizza
+  });
+
   const handleInputChange = (e) => {
     handlePessoasChange(e.target.value);
   };
 
+  const pizzaOptions = [
+    { value: 'pequena', label: 'Pequena (4 fatias)' },
+    { value: 'media', label: 'Média (6 fatias)' },
+    { value: 'grande', label: 'Grande (8 fatias)' },
+    { value: 'gigante', label: 'Gigante (12 fatias)' }
+  ];
+
   return (
     <div className="input-section">
-      <div className="input-group">
-        <label>Número de Pessoas:</label>
-        <input 
-          type="number" 
-          value={pessoas} 
-          onChange={handleInputChange} 
-          min="0" 
-          placeholder="Ex: 10"
-        />
-      </div>
+      <h3>📝 Configure sua festa</h3>
+      
+      <InputField
+        label="Número de Pessoas"
+        type="number"
+        value={pessoas}
+        onChange={handleInputChange}
+        min="0"
+        placeholder="Ex: 10"
+        status={getFieldStatus('pessoas')}
+        message={getFieldMessage('pessoas')}
+        required
+      />
 
-      <div className="input-group">
-        <label>Tamanho da Pizza:</label>
-        <select value={tamanhoPizza} onChange={(e) => handleTamanhoPizzaChange(e.target.value)}>
-          <option value="pequena">Pequena (4 fatias)</option>
-          <option value="media">Média (6 fatias)</option>
-          <option value="grande">Grande (8 fatias)</option>
-          <option value="gigante">Gigante (12 fatias)</option>
-        </select>
-      </div>
+      <SelectField
+        label="Tamanho da Pizza"
+        value={tamanhoPizza}
+        onChange={(e) => handleTamanhoPizzaChange(e.target.value)}
+        options={pizzaOptions}
+        status="success"
+        message="Perfeito! Pizza selecionada"
+        required
+      />
 
-      <div className="input-group">
-        <label>Fatias por Pessoa:</label>
-        <input
-          type="number"
-          value={fatiasPorPessoa}
-          onChange={(e) => handleFatiasPorPessoaChange(e.target.value)}
-          min="1"
-          placeholder="Ex: 4"
-        />
-      </div>
+      <InputField
+        label="Fatias por Pessoa"
+        type="number"
+        value={fatiasPorPessoa}
+        onChange={(e) => handleFatiasPorPessoaChange(e.target.value)}
+        min="1"
+        max="10"
+        placeholder="Ex: 4"
+        status={getFieldStatus('fatiasPorPessoa')}
+        message={getFieldMessage('fatiasPorPessoa')}
+        required
+      />
 
-      <div className="input-group">
-        <label>Bebida por Pessoa (litros):</label>
-        <input
-          type="number"
-          value={bebidaPorPessoa}
-          onChange={(e) => handleBebidaPorPessoaChange(e.target.value)}
-          min="0.1"
-          step="0.1"
-          placeholder="Ex: 0.5"
-        />
-      </div>
+      <InputField
+        label="Bebida por Pessoa (litros)"
+        type="number"
+        value={bebidaPorPessoa}
+        onChange={(e) => handleBebidaPorPessoaChange(e.target.value)}
+        min="0.1"
+        max="3"
+        step="0.1"
+        placeholder="Ex: 0.5"
+        status={getFieldStatus('bebidaPorPessoa')}
+        message={getFieldMessage('bebidaPorPessoa')}
+        required
+      />
 
-      <div className="input-group">
-        <label>Preço da Pizza (R$):</label>
-        <input
-          type="number"
-          value={precoPizza}
-          onChange={(e) => handlePrecoPizzaChange(e.target.value)}
-          min="0"
-          step="0.01"
-          placeholder="Ex: 35.00"
-        />
-      </div>
+      <InputField
+        label="Preço da Pizza (R$)"
+        type="number"
+        value={precoPizza}
+        onChange={(e) => handlePrecoPizzaChange(e.target.value)}
+        min="0"
+        step="0.01"
+        placeholder="Ex: 35.00"
+        status={getFieldStatus('precoPizza')}
+        message={getFieldMessage('precoPizza')}
+        required
+      />
 
-      <button onClick={resetarCampos} className="reset-button">
-        🔄 Resetar Campos
-      </button>
+      <div className="form-actions">
+        <button 
+          onClick={resetarCampos} 
+          className="reset-button"
+          disabled={pessoas === 0 && precoPizza === 0}
+        >
+          🔄 Resetar Campos
+        </button>
+        
+        {hasErrors && (
+          <div className="form-status error">
+            ❌ Corrija os erros acima para continuar
+          </div>
+        )}
+        
+        {isFormValid && (
+          <div className="form-status success">
+            ✅ Tudo pronto! Veja os resultados abaixo
+          </div>
+        )}
+      </div>
     </div>
   );
 };
