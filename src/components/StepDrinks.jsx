@@ -3,7 +3,7 @@ import React, { useState, useMemo, useCallback, memo } from 'react';
 import InputField from './InputField';
 import AnimatedIcon from './AnimatedIcon';
 import Tooltip from './Tooltip';
-// import useDebounce from '../hooks/useDebounce'; // Comentado temporariamente
+import useDebounce from '../hooks/useDebounce';
 
 const StepDrinks = memo(({
   bebidaPorPessoa,
@@ -20,8 +20,7 @@ const StepDrinks = memo(({
   const { totalPizzas = 0, totalFatias = 0 } = resultadoComida || {};
   const [selectedDrinkPreset, setSelectedDrinkPreset] = useState(null);
   
-  // Debounce comentado temporariamente para debug
-  // const debouncedPrecoPizza = useDebounce(precoPizza, 300);
+  const debouncedPrecoPizza = useDebounce(precoPizza, 300);
 
   const drinkPresets = useMemo(() => [
     {

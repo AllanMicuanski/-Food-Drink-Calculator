@@ -3,7 +3,6 @@ import React, { memo, useMemo, useCallback } from 'react';
 import StepIndicator from './StepIndicator';
 import StepPizza from './StepPizza';
 import StepDrinksSimple from './StepDrinksSimple';
-// import StepDrinks from './StepDrinks'; // Comentado temporariamente
 import StepResults from './StepResults';
 import WizardNavigation from './WizardNavigation';
 import usePartyCalculator from '../hooks/usePartyCalculator';

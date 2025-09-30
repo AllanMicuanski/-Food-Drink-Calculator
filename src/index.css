@@ -4,8 +4,8 @@ body {
   min-height: 100vh;
   background-color: #f0f0f0;
 
-  background-image: url("../public/balao.png"), url("../public/pizza.png"),
-    url("../public/churrasco.png"), url("../public/refri.png");
+  background-image: url("/balao.png"), url("/pizza.png"), url("/churrasco.png"),
+    url("/refri.png");
 
   background-size: 10%, 15%, 15%, 15%;
   background-position: top left, top right, bottom left, bottom right;

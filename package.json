@@ -1,18 +1,30 @@
 {
-  "name": "vite-project",
+  "name": "party-calculator",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "Calculadora inteligente para festas e eventos - calcule pizzas, bebidas e custos facilmente",
+  "keywords": [
+    "react",
+    "calculator",
+    "party",
+    "food",
+    "drinks",
+    "event-planning",
+    "pizza"
+  ],
+  "author": "Allan Micuanski",
+  "packageManager": "pnpm@8.0.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "clean": "rm -rf dist node_modules"
   },
   "dependencies": {
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "styled-components": "^6.1.13"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

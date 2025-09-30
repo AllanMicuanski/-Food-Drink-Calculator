@@ -1,0 +1,24 @@
+[tools]
+node = "18.20.4"
+pnpm = "10.17.1"
+
+[env]
+# Configurações de ambiente específicas do projeto
+NODE_ENV = "development"
+
+[tasks.dev]
+description = "Start development server"
+run = "pnpm dev"
+depends = ["install"]
+
+[tasks.install]
+description = "Install dependencies"
+run = "pnpm install"
+
+[tasks.build]
+description = "Build for production"
+run = "pnpm build"
+
+[tasks.clean]
+description = "Clean node_modules and dist"
+run = "pnpm clean"
