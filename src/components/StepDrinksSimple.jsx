@@ -1,4 +1,4 @@
-// src/components/StepDrinksSimple.jsx - Versão simplificada
+// src/components/StepDrinksSimple.jsx
 import React from 'react';
 import InputField from './InputField';
 

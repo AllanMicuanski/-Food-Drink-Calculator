@@ -1,14 +1,13 @@
 // src/hooks/useCalculations.js
 import { useMemo } from "react";
 import { FATIAS_PIZZA } from "../data/constants";
-// Comentado temporariamente para debug
-// import {
-//   calculatePizzaNeeds,
-//   calculateCosts,
-//   calculateDrinks,
-//   formatCurrency,
-//   memoizedCalculation,
-// } from "../utils/calculations";
+import {
+  calculatePizzaNeeds,
+  calculateCosts,
+  calculateDrinks,
+  formatCurrency,
+  memoizedCalculation,
+} from "../utils/calculations";
 
 const useCalculations = ({
   pessoas,
@@ -18,7 +17,6 @@ const useCalculations = ({
   precoPizza,
 }) => {
   const resultadoComida = useMemo(() => {
-    // Sempre retorna um objeto válido, mesmo sem dados
     if (!pessoas || pessoas <= 0) {
       return {
         totalPizzas: 0,
@@ -30,35 +28,47 @@ const useCalculations = ({
       };
     }
 
-    // Versão simplificada sem utils para debug
-    const fatiasPorPizza = FATIAS_PIZZA[tamanhoPizza] || 8;
-    const totalFatias = pessoas * fatiasPorPessoa;
-    const totalPizzas = Math.ceil(totalFatias / fatiasPorPizza);
-    const totalCustoPizza = totalPizzas * precoPizza;
-    const rachaRango = pessoas > 0 ? totalCustoPizza / pessoas : 0;
+    const cacheKey = `food-${pessoas}-${tamanhoPizza}-${fatiasPorPessoa}-${precoPizza}`;
 
-    return {
-      totalPizzas,
-      totalFatias,
-      totalCustoPizza,
-      rachaRango,
-      mensagem: `Você vai precisar de: ${totalPizzas} pizzas (total: ${totalFatias} fatias) - Custo total: R$ ${totalCustoPizza.toFixed(
-        2
-      )}`,
-      racha:
-        pessoas > 0
-          ? `R$ ${rachaRango.toFixed(2)} por pessoa`
-          : "R$ 0.00 por pessoa",
-    };
+    return memoizedCalculation(cacheKey, () => {
+      const fatiasPorPizza = FATIAS_PIZZA[tamanhoPizza] || 8;
+      const { totalFatias, totalPizzas } = calculatePizzaNeeds(
+        pessoas,
+        fatiasPorPessoa,
+        fatiasPorPizza
+      );
+      const { totalCustoPizza, rachaRango } = calculateCosts(
+        totalPizzas,
+        precoPizza,
+        pessoas
+      );
+
+      return {
+        totalPizzas,
+        totalFatias,
+        totalCustoPizza,
+        rachaRango,
+        mensagem: `Você vai precisar de: ${totalPizzas} pizzas (total: ${totalFatias} fatias) - Custo total: ${formatCurrency(
+          totalCustoPizza
+        )}`,
+        racha:
+          pessoas > 0
+            ? `${formatCurrency(rachaRango)} por pessoa`
+            : "R$ 0.00 por pessoa",
+      };
+    });
   }, [pessoas, tamanhoPizza, fatiasPorPessoa, precoPizza]);
 
   const resultadoBebida = useMemo(() => {
-    // Sempre retorna um objeto válido
-    const totalLitros = (pessoas || 0) * bebidaPorPessoa;
-    return {
-      totalLitros,
-      mensagem: `${totalLitros.toFixed(2)} litros de refrigerante`,
-    };
+    const cacheKey = `drinks-${pessoas}-${bebidaPorPessoa}`;
+
+    return memoizedCalculation(cacheKey, () => {
+      const { totalLitros } = calculateDrinks(pessoas || 0, bebidaPorPessoa);
+      return {
+        totalLitros,
+        mensagem: `${totalLitros.toFixed(2)} litros de refrigerante`,
+      };
+    });
   }, [pessoas, bebidaPorPessoa]);
 
   const resumoCompleto = useMemo(() => {
