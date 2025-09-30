@@ -1,7 +1,7 @@
 // src/components/InputField.jsx
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 
-const InputField = ({
+const InputField = memo(({
   label,
   type = 'text',
   value,
@@ -15,31 +15,22 @@ const InputField = ({
   required = false,
   ...props
 }) => {
-  const getStatusIcon = () => {
-    switch (status) {
-      case 'success':
-        return '✅';
-      case 'warning':
-        return '⚠️';
-      case 'error':
-        return '❌';
-      default:
-        return '';
-    }
-  };
+  const statusIcons = useMemo(() => ({
+    success: '✅',
+    warning: '⚠️',
+    error: '❌',
+    default: ''
+  }), []);
 
-  const getStatusClass = () => {
-    switch (status) {
-      case 'success':
-        return 'input-success';
-      case 'warning':
-        return 'input-warning';
-      case 'error':
-        return 'input-error';
-      default:
-        return '';
-    }
-  };
+  const statusClasses = useMemo(() => ({
+    success: 'input-success',
+    warning: 'input-warning',
+    error: 'input-error',
+    default: ''
+  }), []);
+
+  const statusIcon = statusIcons[status];
+  const statusClass = statusClasses[status];
 
   return (
     <div className="input-field">
@@ -57,11 +48,11 @@ const InputField = ({
           min={min}
           max={max}
           step={step}
-          className={`input ${getStatusClass()}`}
+          className={`input ${statusClass}`}
           {...props}
         />
         {status !== 'default' && (
-          <span className="input-icon">{getStatusIcon()}</span>
+          <span className="input-icon">{statusIcon}</span>
         )}
       </div>
       
@@ -72,6 +63,6 @@ const InputField = ({
       )}
     </div>
   );
-};
+});
 
 export default InputField;

@@ -1,10 +1,11 @@
 // src/components/StepDrinks.jsx
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback, memo } from 'react';
 import InputField from './InputField';
 import AnimatedIcon from './AnimatedIcon';
 import Tooltip from './Tooltip';
+// import useDebounce from '../hooks/useDebounce'; // Comentado temporariamente
 
-const StepDrinks = ({
+const StepDrinks = memo(({
   bebidaPorPessoa,
   precoPizza,
   handleBebidaPorPessoaChange,
@@ -13,10 +14,16 @@ const StepDrinks = ({
   getFieldMessage,
   resultadoComida
 }) => {
-  const { totalPizzas, totalFatias } = resultadoComida;
+  console.log('StepDrinks data:', { bebidaPorPessoa, precoPizza, resultadoComida });
+  
+  // Verificação de segurança para resultadoComida com valores padrão
+  const { totalPizzas = 0, totalFatias = 0 } = resultadoComida || {};
   const [selectedDrinkPreset, setSelectedDrinkPreset] = useState(null);
+  
+  // Debounce comentado temporariamente para debug
+  // const debouncedPrecoPizza = useDebounce(precoPizza, 300);
 
-  const drinkPresets = [
+  const drinkPresets = useMemo(() => [
     {
       id: 'short',
       icon: '⏰',
@@ -49,21 +56,21 @@ const StepDrinks = ({
       amount: 1.0,
       description: 'Quando está muito calor'
     }
-  ];
+  ], []);
 
-  const handlePresetClick = (preset) => {
+  const handlePresetClick = useCallback((preset) => {
     setSelectedDrinkPreset(preset.id);
     handleBebidaPorPessoaChange(preset.amount.toString());
-  };
+  }, [handleBebidaPorPessoaChange]);
 
-  const getPriceRecommendation = () => {
-    const price = parseFloat(precoPizza);
+  const getPriceRecommendation = useMemo(() => {
+    const price = parseFloat(debouncedPrecoPizza);
     if (price === 0) return { icon: '💰', text: 'Digite o preço para ver análise', color: '#6c757d' };
     if (price < 20) return { icon: '💸', text: 'Preço muito baixo - verifique!', color: '#dc3545' };
     if (price <= 40) return { icon: '👍', text: 'Preço justo para o mercado', color: '#28a745' };
     if (price <= 60) return { icon: '💰', text: 'Preço médio-alto', color: '#ffc107' };
     return { icon: '💎', text: 'Preço premium', color: '#17a2b8' };
-  };
+  }, [debouncedPrecoPizza]);
 
   const priceRec = getPriceRecommendation();
 
@@ -217,6 +224,6 @@ const StepDrinks = ({
       </div>
     </div>
   );
-};
+});
 
 export default StepDrinks;

@@ -1,20 +1,62 @@
 // src/components/StepResults.jsx
-import React from 'react';
+import React, { memo, useMemo, useCallback } from 'react';
 
-const StepResults = ({ 
+const StepResults = memo(({ 
   resultadoComida, 
   resultadoBebida, 
   pessoas,
   resetarCampos,
   resetWizard 
 }) => {
-  const { totalPizzas, totalFatias, totalCustoPizza, rachaRango } = resultadoComida;
-  const { totalLitros } = resultadoBebida;
+  console.log('StepResults data:', { resultadoComida, resultadoBebida, pessoas });
 
-  const handleNovaFesta = () => {
+  // Dados com valores padrão seguros
+  const { totalPizzas = 0, totalFatias = 0, totalCustoPizza = 0, rachaRango = 0 } = resultadoComida || {};
+  const { totalLitros = 0 } = resultadoBebida || {};
+
+  const handleNovaFesta = useCallback(() => {
     resetarCampos();
     resetWizard();
-  };
+  }, [resetarCampos, resetWizard]);
+
+  const handlePrint = useCallback(() => {
+    window.print();
+  }, []);
+
+  const summaryData = useMemo(() => ({
+    food: {
+      pizzas: totalPizzas,
+      fatias: totalFatias,
+      label: 'pizzas necessárias',
+      subInfo: `${totalFatias} fatias no total`
+    },
+    drinks: {
+      amount: totalLitros.toFixed(1),
+      label: 'litros de refrigerante',
+      subInfo: 'Para toda a festa'
+    },
+    costs: {
+      total: totalCustoPizza.toFixed(2),
+      perPerson: rachaRango.toFixed(2),
+      label: 'custo total',
+      subInfo: `R$ ${rachaRango.toFixed(2)} por pessoa`
+    }
+  }), [totalPizzas, totalFatias, totalCustoPizza, rachaRango, totalLitros]);
+
+  const shoppingItems = useMemo(() => [
+    {
+      icon: '🍕',
+      text: `${totalPizzas} pizzas`,
+      cost: `R$ ${totalCustoPizza.toFixed(2)}`,
+      key: 'pizzas'
+    },
+    {
+      icon: '🥤',
+      text: `${totalLitros.toFixed(1)}L de refrigerante`,
+      note: 'Sugestão: compre garrafas de 2L',
+      key: 'drinks'
+    }
+  ], [totalPizzas, totalCustoPizza, totalLitros]);
 
   return (
     <div className="wizard-step">
@@ -31,9 +73,9 @@ const StepResults = ({
               <h3>Comida</h3>
             </div>
             <div className="card-content">
-              <div className="main-number">{totalPizzas}</div>
-              <div className="main-label">pizzas necessárias</div>
-              <div className="sub-info">{totalFatias} fatias no total</div>
+              <div className="main-number">{summaryData.food.pizzas}</div>
+              <div className="main-label">{summaryData.food.label}</div>
+              <div className="sub-info">{summaryData.food.subInfo}</div>
             </div>
           </div>
 
@@ -43,9 +85,9 @@ const StepResults = ({
               <h3>Bebidas</h3>
             </div>
             <div className="card-content">
-              <div className="main-number">{totalLitros.toFixed(1)}</div>
-              <div className="main-label">litros de refrigerante</div>
-              <div className="sub-info">Para toda a festa</div>
+              <div className="main-number">{summaryData.drinks.amount}</div>
+              <div className="main-label">{summaryData.drinks.label}</div>
+              <div className="sub-info">{summaryData.drinks.subInfo}</div>
             </div>
           </div>
 
@@ -55,9 +97,9 @@ const StepResults = ({
               <h3>Custos</h3>
             </div>
             <div className="card-content">
-              <div className="main-number">R$ {totalCustoPizza.toFixed(2)}</div>
-              <div className="main-label">custo total</div>
-              <div className="sub-info">R$ {rachaRango.toFixed(2)} por pessoa</div>
+              <div className="main-number">R$ {summaryData.costs.total}</div>
+              <div className="main-label">{summaryData.costs.label}</div>
+              <div className="sub-info">{summaryData.costs.subInfo}</div>
             </div>
           </div>
         </div>
@@ -65,16 +107,14 @@ const StepResults = ({
         <div className="shopping-list">
           <h3>📝 Lista de compras:</h3>
           <div className="shopping-items">
-            <div className="shopping-item">
-              <span className="item-icon">🍕</span>
-              <span>{totalPizzas} pizzas</span>
-              <span className="item-cost">R$ {totalCustoPizza.toFixed(2)}</span>
-            </div>
-            <div className="shopping-item">
-              <span className="item-icon">🥤</span>
-              <span>{totalLitros.toFixed(1)}L de refrigerante</span>
-              <span className="item-note">Sugestão: compre garrafas de 2L</span>
-            </div>
+            {shoppingItems.map(item => (
+              <div key={item.key} className="shopping-item">
+                <span className="item-icon">{item.icon}</span>
+                <span>{item.text}</span>
+                {item.cost && <span className="item-cost">{item.cost}</span>}
+                {item.note && <span className="item-note">{item.note}</span>}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -83,7 +123,7 @@ const StepResults = ({
             🔄 Calcular Nova Festa
           </button>
           <button 
-            onClick={() => window.print()} 
+            onClick={handlePrint} 
             className="primary-button"
           >
             🖨️ Imprimir Lista
@@ -96,6 +136,8 @@ const StepResults = ({
       </div>
     </div>
   );
-};
+});
+
+StepResults.displayName = 'StepResults';
 
 export default StepResults;

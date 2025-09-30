@@ -1,5 +1,5 @@
 // src/hooks/useWizard.js
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 
 const useWizard = (totalSteps = 3) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -29,42 +29,60 @@ const useWizard = (totalSteps = 3) => {
     []
   );
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     if (currentStep < totalSteps) {
       setCompletedSteps((prev) => new Set([...prev, currentStep]));
       setCurrentStep((prev) => prev + 1);
     }
-  };
+  }, [currentStep, totalSteps]);
 
-  const goToPrevious = () => {
+  const goToPrevious = useCallback(() => {
     if (currentStep > 1) {
       setCurrentStep((prev) => prev - 1);
     }
-  };
+  }, [currentStep]);
 
-  const goToStep = (step) => {
-    if (step >= 1 && step <= totalSteps) {
-      setCurrentStep(step);
-    }
-  };
+  const goToStep = useCallback(
+    (step) => {
+      if (step >= 1 && step <= totalSteps) {
+        setCurrentStep(step);
+      }
+    },
+    [totalSteps]
+  );
 
-  const markStepCompleted = (step) => {
+  const markStepCompleted = useCallback((step) => {
     setCompletedSteps((prev) => new Set([...prev, step]));
-  };
+  }, []);
 
-  const isStepCompleted = (step) => completedSteps.has(step);
-  const isStepActive = (step) => currentStep === step;
-  const canGoToNext = currentStep < totalSteps;
-  const canGoToPrevious = currentStep > 1;
-  const isFirstStep = currentStep === 1;
-  const isLastStep = currentStep === totalSteps;
+  const isStepCompleted = useCallback(
+    (step) => completedSteps.has(step),
+    [completedSteps]
+  );
+  const isStepActive = useCallback(
+    (step) => currentStep === step,
+    [currentStep]
+  );
 
-  const currentStepData = steps.find((step) => step.id === currentStep);
+  const navigationState = useMemo(
+    () => ({
+      canGoToNext: currentStep < totalSteps,
+      canGoToPrevious: currentStep > 1,
+      isFirstStep: currentStep === 1,
+      isLastStep: currentStep === totalSteps,
+    }),
+    [currentStep, totalSteps]
+  );
 
-  const resetWizard = () => {
+  const currentStepData = useMemo(
+    () => steps.find((step) => step.id === currentStep),
+    [steps, currentStep]
+  );
+
+  const resetWizard = useCallback(() => {
     setCurrentStep(1);
     setCompletedSteps(new Set());
-  };
+  }, []);
 
   return {
     currentStep,
@@ -77,10 +95,7 @@ const useWizard = (totalSteps = 3) => {
     markStepCompleted,
     isStepCompleted,
     isStepActive,
-    canGoToNext,
-    canGoToPrevious,
-    isFirstStep,
-    isLastStep,
+    ...navigationState,
     resetWizard,
     totalSteps,
   };

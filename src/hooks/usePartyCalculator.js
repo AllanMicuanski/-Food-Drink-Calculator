@@ -1,5 +1,5 @@
 // src/hooks/usePartyCalculator.js
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 const usePartyCalculator = () => {
   const [pessoas, setPessoas] = useState(0);
@@ -8,45 +8,45 @@ const usePartyCalculator = () => {
   const [bebidaPorPessoa, setBebidaPorPessoa] = useState(0.5);
   const [precoPizza, setPrecoPizza] = useState(0);
 
-  const handlePessoasChange = (value) => {
+  const handlePessoasChange = useCallback((value) => {
     const numValue = Number(value);
     if (numValue >= 0) {
       setPessoas(numValue);
     }
-  };
+  }, []);
 
-  const handleTamanhoPizzaChange = (value) => {
+  const handleTamanhoPizzaChange = useCallback((value) => {
     setTamanhoPizza(value);
-  };
+  }, []);
 
-  const handleFatiasPorPessoaChange = (value) => {
+  const handleFatiasPorPessoaChange = useCallback((value) => {
     const numValue = Number(value);
     if (numValue > 0) {
       setFatiasPorPessoa(numValue);
     }
-  };
+  }, []);
 
-  const handleBebidaPorPessoaChange = (value) => {
+  const handleBebidaPorPessoaChange = useCallback((value) => {
     const numValue = Number(value);
     if (numValue >= 0) {
       setBebidaPorPessoa(numValue);
     }
-  };
+  }, []);
 
-  const handlePrecoPizzaChange = (value) => {
+  const handlePrecoPizzaChange = useCallback((value) => {
     const numValue = Number(value);
     if (numValue >= 0) {
       setPrecoPizza(numValue);
     }
-  };
+  }, []);
 
-  const resetarCampos = () => {
+  const resetarCampos = useCallback(() => {
     setPessoas(0);
     setTamanhoPizza("media");
     setFatiasPorPessoa(4);
     setBebidaPorPessoa(0.5);
     setPrecoPizza(0);
-  };
+  }, []);
 
   return {
     // Estados
@@ -56,7 +56,7 @@ const usePartyCalculator = () => {
     bebidaPorPessoa,
     precoPizza,
 
-    // Handlers
+    // Handlers (memoized)
     handlePessoasChange,
     handleTamanhoPizzaChange,
     handleFatiasPorPessoaChange,
