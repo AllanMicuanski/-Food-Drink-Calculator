@@ -1,37 +1,38 @@
 // src/components/AnimatedIcon.jsx
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 
-const AnimatedIcon = ({ 
+const AnimatedIcon = memo(({ 
   icon, 
   size = 'medium', 
   animation = 'none',
   color = 'inherit',
   className = ''
 }) => {
-  const getSizeClass = () => {
-    switch (size) {
-      case 'small': return 'icon-small';
-      case 'medium': return 'icon-medium';
-      case 'large': return 'icon-large';
-      case 'xl': return 'icon-xl';
-      default: return 'icon-medium';
-    }
-  };
+  const sizeClasses = useMemo(() => ({
+    small: 'icon-small',
+    medium: 'icon-medium',
+    large: 'icon-large',
+    xl: 'icon-xl'
+  }), []);
 
-  const getAnimationClass = () => {
-    switch (animation) {
-      case 'bounce': return 'icon-bounce';
-      case 'pulse': return 'icon-pulse';
-      case 'spin': return 'icon-spin';
-      case 'shake': return 'icon-shake';
-      case 'float': return 'icon-float';
-      default: return '';
-    }
-  };
+  const animationClasses = useMemo(() => ({
+    bounce: 'icon-bounce',
+    pulse: 'icon-pulse',
+    spin: 'icon-spin',
+    shake: 'icon-shake',
+    float: 'icon-float',
+    none: ''
+  }), []);
+
+  const finalClassName = useMemo(() => {
+    const sizeClass = sizeClasses[size] || 'icon-medium';
+    const animationClass = animationClasses[animation] || '';
+    return `animated-icon ${sizeClass} ${animationClass} ${className}`.trim();
+  }, [size, animation, className, sizeClasses, animationClasses]);
 
   return (
     <span 
-      className={`animated-icon ${getSizeClass()} ${getAnimationClass()} ${className}`}
+      className={finalClassName}
       style={{ color }}
       role="img"
       aria-label={`Icon: ${icon}`}
@@ -39,6 +40,6 @@ const AnimatedIcon = ({
       {icon}
     </span>
   );
-};
+});
 
 export default AnimatedIcon;
