@@ -1,48 +1,40 @@
 // src/components/Calculator.jsx
-import React, { useState } from 'react';
+import React from 'react';
 import Result from './Result';
-import { FATIAS_PIZZA } from '../data/constants';
+import usePartyCalculator from '../hooks/usePartyCalculator';
+import useCalculations from '../hooks/useCalculations';
 import '../styles/components/Calculator.css';
 
 const Calculator = () => {
-  const [pessoas, setPessoas] = useState(0);
-  const [tamanhoPizza, setTamanhoPizza] = useState('media');
-  const [fatiasPorPessoa, setFatiasPorPessoa] = useState(4); 
-  const [bebidaPorPessoa, setBebidaPorPessoa] = useState(0.5); 
-  const [precoPizza, setPrecoPizza] = useState(0); 
+  const {
+    pessoas,
+    tamanhoPizza,
+    fatiasPorPessoa,
+    bebidaPorPessoa,
+    precoPizza,
+    handlePessoasChange,
+    handleTamanhoPizzaChange,
+    handleFatiasPorPessoaChange,
+    handleBebidaPorPessoaChange,
+    handlePrecoPizzaChange,
+    resetarCampos
+  } = usePartyCalculator();
+
+  const { resultadoComida, resultadoBebida } = useCalculations({
+    pessoas,
+    tamanhoPizza,
+    fatiasPorPessoa,
+    bebidaPorPessoa,
+    precoPizza
+  });
 
   const handleInputChange = (e) => {
-    const value = Number(e.target.value);
-    if (value >= 0) {
-      setPessoas(value);
-    }
+    handlePessoasChange(e.target.value);
   };
 
-  const calcularComida = () => {
-    const totalFatias = pessoas * fatiasPorPessoa;
-    const totalPizzas = Math.ceil(totalFatias / FATIAS_PIZZA[tamanhoPizza]);
-    const totalCustoPizza = totalPizzas * precoPizza; 
-    const rachaRango = pessoas > 0 ? (totalCustoPizza / pessoas) : 0; 
-
-    return {
-      mensagem: `Você vai precisar de: ${totalPizzas} pizzas (total: ${totalFatias} fatias) - Custo total: R$ ${totalCustoPizza.toFixed(2)}`,
-      racha: pessoas > 0 ? `R$ ${rachaRango.toFixed(2)} por pessoa` : 'R$ 0.00 por pessoa',
-    };
-  };
-
+  // Função para compatibilidade com o componente Result atual
   const calcularBebida = () => {
-    const totalBebida = pessoas * bebidaPorPessoa; 
-    return `${totalBebida.toFixed(2)} litros de refrigerante`;
-  };
-
-  const { mensagem, racha } = calcularComida();
-
-  const resetarCampos = () => {
-    setPessoas(0);
-    setTamanhoPizza('media');
-    setFatiasPorPessoa(4);
-    setBebidaPorPessoa(0.5);
-    setPrecoPizza(0);
+    return resultadoBebida.mensagem;
   };
 
   return (
@@ -52,7 +44,7 @@ const Calculator = () => {
       <input type="number" value={pessoas} onChange={handleInputChange} min="0" />
 
       <label>Tamanho da Pizza:</label>
-      <select value={tamanhoPizza} onChange={(e) => setTamanhoPizza(e.target.value)}>
+      <select value={tamanhoPizza} onChange={(e) => handleTamanhoPizzaChange(e.target.value)}>
         <option value="pequena">Pequena</option>
         <option value="media">Média</option>
         <option value="grande">Grande</option>
@@ -63,7 +55,7 @@ const Calculator = () => {
       <input
         type="number"
         value={fatiasPorPessoa}
-        onChange={(e) => setFatiasPorPessoa(Number(e.target.value))}
+        onChange={(e) => handleFatiasPorPessoaChange(e.target.value)}
         min="1"
       />
 
@@ -71,7 +63,7 @@ const Calculator = () => {
       <input
         type="number"
         value={bebidaPorPessoa}
-        onChange={(e) => setBebidaPorPessoa(Number(e.target.value))}
+        onChange={(e) => handleBebidaPorPessoaChange(e.target.value)}
         min="0.1"
         step="0.1"
       />
@@ -80,14 +72,18 @@ const Calculator = () => {
       <input
         type="number"
         value={precoPizza}
-        onChange={(e) => setPrecoPizza(Number(e.target.value))}
+        onChange={(e) => handlePrecoPizzaChange(e.target.value)}
         min="0"
         step="0.01"
       />
 
       <button onClick={resetarCampos} className="reset-button">Resetar</button>
 
-      <Result mensagem={mensagem} racha={racha} calcularBebida={calcularBebida} />
+      <Result 
+        mensagem={resultadoComida.mensagem} 
+        racha={resultadoComida.racha} 
+        calcularBebida={calcularBebida} 
+      />
 
       <footer className="footer">
         <p>Powered by: Allan Micuanski</p>
